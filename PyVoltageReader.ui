@@ -84,9 +84,19 @@
          </size>
         </property>
         <property name="text">
-         <string>Refresh</string>
+         <string>Refresh List</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Refresh rate:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="rateBox"/>
       </item>
      </layout>
     </item>
