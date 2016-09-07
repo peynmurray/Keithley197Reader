@@ -49,3 +49,6 @@ Temporary Items
 .idea/PyVoltageReader.iml
 *.pyc
 __pycache__/mplWidget.cpython-35.pyc
+*.pyc
+__pycache__/PyVoltageReader.cpython-35.pyc
+__pycache__/mplWidget.cpython-35.pyc
