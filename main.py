@@ -1,5 +1,3 @@
-
-
 import visa
 import matplotlib
 matplotlib.use("Qt5Agg")
@@ -16,11 +14,16 @@ class QueryVoltmeter(QThread):
 
 	dataReady = QtCore.pyqtSignal(float)
 
-	def __init__(self, gpib_device, rate):
+	def __init__(self, gpib_device, rate, kind):
 		QThread.__init__(self)
-		self.currentCalibration = 1
-		self.voltageCalibration = 120
-		self.powerCalibration = 1
+		if kind == "voltmeter":
+			self.calibration = 120
+		elif kind == "ammeter":
+			self.calibration = 0.1
+		elif kind == "wattmeter":
+			self.calibration = 50
+		else:
+			raise ValueError("Wrong kind parameter.")
 
 		self.gpib_device = gpib_device
 		self.rm = visa.ResourceManager()
@@ -33,7 +36,8 @@ class QueryVoltmeter(QThread):
 
 	def run(self):
 		while not self.stopFlag:
-			self.dataReady.emit(self.voltageCalibration*float(self.instrument.read()[4:]))
+			self.dataReady.emit(self.calibration*float(self.instrument.read()[4:]))
+			self.sleep(1/rate)
 		return
 
 	def stop(self):
@@ -41,8 +45,6 @@ class QueryVoltmeter(QThread):
 		return
 
 class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, object):
-
-	stopReading = QtCore.pyqtSignal()
 
 	def __init__(self):
 		QtWidgets.QMainWindow.__init__(self)
@@ -65,7 +67,7 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 
 	def startButtonClicked(self):
 		self.t0 = time.time()
-		self.queryThread = QueryVoltmeter(self.gpibBox.currentText(), rate)
+		self.queryThread = QueryVoltmeter(self.gpibBox.currentText(), rate=self.rateBox.value(), kind="voltmeter")
 		self.queryThread.dataReady.connect(self.updatePlot)
 		self.queryThread.start()
 		return
@@ -75,8 +77,9 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 		return
 
 	def clearButtonClicked(self):
-		self.plot.clearFig()
+		self.line.set_data([], [])
 		self.decoratePlot()
+		self.ax.set_xlim(0,1)
 		return
 
 	def refreshButtonClicked(self):
@@ -97,10 +100,6 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 		self.ax.set_ylim(min(self.line.get_ydata()), max(self.line.get_ydata()))
 		self.plot.getFig().canvas.draw()
 		self.plot.getFig().canvas.flush_events()
-		# self.ax.draw_artist(self.ax.patch)
-		# self.ax.draw_artist(self.line)
-		# self.plot.getFig().canvas.update()
-		# self.plot.getFig().canvas.flush_events()
 		return
 
 
