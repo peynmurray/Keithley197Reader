@@ -18,6 +18,10 @@ class QueryVoltmeter(QThread):
 
 	def __init__(self, gpib_device, rate):
 		QThread.__init__(self)
+		self.currentCalibration = 1
+		self.voltageCalibration = 120
+		self.powerCalibration = 1
+
 		self.gpib_device = gpib_device
 		self.rm = visa.ResourceManager()
 		self.instrument = self.rm.open_resource(gpib_device)
@@ -29,7 +33,7 @@ class QueryVoltmeter(QThread):
 
 	def run(self):
 		while not self.stopFlag:
-			self.dataReady.emit(float(self.instrument.read()[5:]))
+			self.dataReady.emit(self.voltageCalibration*float(self.instrument.read()[4:]))
 		return
 
 	def stop(self):
@@ -46,7 +50,7 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 		self.connectButtons()
 		self.plot = mplWidget.mplWidget(self, layout=self.mplLayout)
 		self.ax = self.plot.getAxes()
-		self.line, = plot([], [], '-k')
+		self.line, = plot([], [], '-ok')
 		self.decoratePlot()
 		return
 
@@ -72,6 +76,7 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 
 	def clearButtonClicked(self):
 		self.plot.clearFig()
+		self.decoratePlot()
 		return
 
 	def refreshButtonClicked(self):
@@ -83,6 +88,7 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 	def decoratePlot(self):
 		self.plot.getAxes().set_xlabel("Time")
 		self.plot.getAxes().set_ylabel("Voltage")
+		self.plot.drawFig()
 		return
 
 	def updatePlot(self, data):

@@ -30,6 +30,7 @@ class mplWidget(FigureCanvas):
 		layout.addWidget(self)
 		layout.addWidget(tb)
 
+		self.axes.ticklabel_format(useOffset=False)
 		return
 
 	#Gets the current coordinates of the plot.
