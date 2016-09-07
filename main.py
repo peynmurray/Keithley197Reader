@@ -1,9 +1,8 @@
+import sys
 import visa
-import matplotlib
-matplotlib.use("Qt5Agg")
-from matplotlib.pyplot import *
+import pyqtgraph as pg
 from numpy import *
-import mplWidget
+# import mplWidget
 import PyVoltageReader
 import time
 
@@ -37,7 +36,7 @@ class QueryVoltmeter(QThread):
 	def run(self):
 		while not self.stopFlag:
 			self.dataReady.emit(self.calibration*float(self.instrument.read()[4:]))
-			self.sleep(1/rate)
+			self.sleep(1/self.rate)
 		return
 
 	def stop(self):
@@ -50,9 +49,8 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 		QtWidgets.QMainWindow.__init__(self)
 		self.setupUi(self)
 		self.connectButtons()
-		self.plot = mplWidget.mplWidget(self, layout=self.mplLayout)
-		self.ax = self.plot.getAxes()
-		self.line, = plot([], [], '-ok')
+		self.xdata = []
+		self.ydata = []
 		self.decoratePlot()
 		return
 
@@ -77,9 +75,9 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 		return
 
 	def clearButtonClicked(self):
-		self.line.set_data([], [])
-		self.decoratePlot()
-		self.ax.set_xlim(0,1)
+		self.xdata = []
+		self.ydata = []
+		self.plot.clear()
 		return
 
 	def refreshButtonClicked(self):
@@ -89,19 +87,19 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 		return
 
 	def decoratePlot(self):
-		self.plot.getAxes().set_xlabel("Time")
-		self.plot.getAxes().set_ylabel("Voltage")
-		self.plot.drawFig()
+		self.plot.setRange(xRange=[0, 1], yRange=[0, 1])
+		self.plot.repaint()
 		return
 
 	def updatePlot(self, data):
-		self.line.set_data(append(self.line.get_xdata(), time.time()-self.t0), append(self.line.get_ydata(), data))
-		self.ax.set_xlim(0, time.time()-self.t0)
-		self.ax.set_ylim(min(self.line.get_ydata()), max(self.line.get_ydata()))
-		self.plot.getFig().canvas.draw()
-		self.plot.getFig().canvas.flush_events()
+		self.plot.clear()
+		self.xdata.append(time.time()-self.t0)
+		self.ydata.append(data)
+		self.plot.setRange(xRange=[0, self.xdata[-1]], yRange=[min(self.ydata), max(self.ydata)])
+		self.plot.addItem(pg.PlotDataItem(x=self.xdata, y=self.ydata, labels={'left':'Voltage', 'bottom':'Time'}, pen='w', symbol='o', pxMode=False))
+		self.plot.setTitle("Voltage")
+		self.plot.repaint()
 		return
-
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)
