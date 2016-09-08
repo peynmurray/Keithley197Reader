@@ -18,6 +18,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.mplLayout = QtWidgets.QVBoxLayout()
         self.mplLayout.setObjectName("mplLayout")
+        self.plot = PlotWidget(self.centralwidget)
+        self.plot.setObjectName("plot")
+        self.mplLayout.addWidget(self.plot)
         self.verticalLayout.addLayout(self.mplLayout)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -77,3 +80,4 @@ class Ui_MainWindow(object):
         self.refreshButton.setText(_translate("MainWindow", "Refresh List"))
         self.label_2.setText(_translate("MainWindow", "Refresh rate (Hz):"))
 
+from pyqtgraph import PlotWidget

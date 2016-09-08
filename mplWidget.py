@@ -1,6 +1,8 @@
 #Written by Peyton Murray
 # Kai Liu Group
 
+# import matplotlib
+# matplotlib.use("Qt5Agg")
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtWidgets import QSizePolicy, QVBoxLayout
 from matplotlib.pyplot import *
@@ -116,4 +118,12 @@ class mplWidget(FigureCanvas):
 	#Sets the current figure to active.
 	def setActive(self):
 		figure(self.fig.number)
+		return
+
+	def canvasDraw(self):
+		self.fig.canvas.draw()
+		return
+
+	def canvasFlush(self):
+		self.fig.canvas.flush_events()
 		return
