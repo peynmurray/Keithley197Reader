@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'PyVoltageReader.ui'
+# Form implementation generated from reading ui file '.\Keithley197Reader.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #

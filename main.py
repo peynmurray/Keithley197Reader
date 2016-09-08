@@ -3,7 +3,7 @@ import visa
 import pyqtgraph as pg
 from numpy import *
 # import mplWidget
-import PyVoltageReader
+import Keithley197Reader
 import time
 
 from PyQt5 import QtGui, QtWidgets, QtCore
@@ -43,7 +43,7 @@ class QueryVoltmeter(QThread):
 		self.stopFlag = True
 		return
 
-class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, object):
+class Keithley197Reader(QtWidgets.QMainWindow, Keithley197Reader.Ui_MainWindow, object):
 
 	def __init__(self):
 		QtWidgets.QMainWindow.__init__(self)
@@ -103,7 +103,7 @@ class PyVoltageReader(QtWidgets.QMainWindow, PyVoltageReader.Ui_MainWindow, obje
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)
-	win = PyVoltageReader()
-	win.setWindowTitle("PyVoltageReader")
+	win = Keithley197Reader()
+	win.setWindowTitle("Keithley197Reader")
 	win.show()
 	sys.exit(app.exec_())
